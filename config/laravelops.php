@@ -26,4 +26,24 @@ return [
             // Add any commands you want to exclude
         ],
     ],
+    
+    // Environment variables settings
+    'env' => [
+        // Whether to enable the Environment UI
+        'enabled' => true,
+        
+        // Variables to hide completely (won't be shown at all)
+        'hidden_variables' => [
+            // Add any variables you want to hide completely
+        ],
+        
+        // Variables to mask (will show as ********)
+        'masked_variables' => [
+            'DB_PASSWORD',
+            'REDIS_PASSWORD',
+            'MAIL_PASSWORD',
+            'AWS_SECRET',
+            // Add any other sensitive variables
+        ],
+    ],
 ]; 

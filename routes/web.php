@@ -2,6 +2,7 @@
 
 use Hamzasgd\LaravelOps\Http\Controllers\LogViewerController;
 use Hamzasgd\LaravelOps\Http\Controllers\ArtisanController;
+use Hamzasgd\LaravelOps\Http\Controllers\EnvController;
 use Illuminate\Support\Facades\Route;
 
 Route::group([
@@ -14,4 +15,7 @@ Route::group([
     
     Route::get('/artisan', [ArtisanController::class, 'index'])->name('artisan.index');
     Route::post('/artisan/execute', [ArtisanController::class, 'execute'])->name('artisan.execute');
+    
+    Route::get('/env', [EnvController::class, 'index'])->name('env.index');
+    Route::post('/env/clear-cache', [EnvController::class, 'clearCache'])->name('env.clear-cache');
 }); 
