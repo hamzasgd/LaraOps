@@ -3,13 +3,17 @@
 namespace Hamzasgd\LaravelOps;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Routing\Router;
 
 class LaravelOpsServiceProvider extends ServiceProvider
 {
-    public function boot()
+    public function boot(Router $router)
     {
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'laravelops');
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
+
+        // Register middleware
+        $router->aliasMiddleware('laravelops.access', \Hamzasgd\LaravelOps\Http\Middleware\AccessMiddleware::class);
 
         if ($this->app->runningInConsole()) {
             $this->publishes([
