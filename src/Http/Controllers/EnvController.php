@@ -46,6 +46,7 @@ class EnvController extends Controller
     private function getEnvironmentVariables()
     {
         $variables = [];
+        $duplicates = [];
         
         // Get all environment variables
         $envVars = $_ENV;
@@ -53,6 +54,36 @@ class EnvController extends Controller
         // Filter out sensitive variables if needed
         $sensitiveKeys = ['DB_PASSWORD', 'REDIS_PASSWORD', 'MAIL_PASSWORD', 'AWS_SECRET'];
         
+        // First pass to identify duplicates in the raw env file
+        $envFilePath = app()->environmentFilePath();
+        if (file_exists($envFilePath)) {
+            $envFileContents = file_get_contents($envFilePath);
+            $lines = explode("\n", $envFileContents);
+            $keyCount = [];
+            
+            foreach ($lines as $line) {
+                // Skip comments and empty lines
+                if (empty($line) || strpos(trim($line), '#') === 0) {
+                    continue;
+                }
+                
+                // Extract key from line (KEY=value format)
+                if (strpos($line, '=') !== false) {
+                    $parts = explode('=', $line, 2);
+                    $key = trim($parts[0]);
+                    
+                    if (!empty($key)) {
+                        $keyCount[$key] = isset($keyCount[$key]) ? $keyCount[$key] + 1 : 1;
+                        
+                        if ($keyCount[$key] > 1) {
+                            $duplicates[$key] = true;
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Process environment variables
         foreach ($envVars as $key => $value) {
             // Skip non-string values and internal PHP variables
             if (!is_string($value) || strpos($key, 'PHP_') === 0) {
@@ -64,7 +95,10 @@ class EnvController extends Controller
                 $value = '********';
             }
             
-            $variables[$key] = $value;
+            $variables[$key] = [
+                'value' => $value,
+                'isDuplicate' => isset($duplicates[$key])
+            ];
         }
         
         // Sort alphabetically
