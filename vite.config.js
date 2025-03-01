@@ -6,7 +6,7 @@ export default defineConfig({
     plugins: [
         laravel({
             input: [
-                'resources/js/index.jsx',
+                'resources/js/app.jsx',
                 'resources/js/index.css',
             ],
             refresh: true,
@@ -17,5 +17,17 @@ export default defineConfig({
         alias: {
             '@': '/resources/js',
         },
+    },
+    build: {
+        outDir: 'public/build',
+        emptyOutDir: true,
+        manifest: true,
+        rollupOptions: {
+            output: {
+                entryFileNames: 'assets/app.js',
+                chunkFileNames: 'assets/[name].js',
+                assetFileNames: 'assets/[name].[ext]'
+            }
+        }
     },
 }); 

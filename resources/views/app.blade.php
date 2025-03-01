@@ -13,7 +13,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Scripts and Styles -->
-    <link rel="stylesheet" href="{{ asset('vendor/laravelops/css/app.css') }}">
+    @if(app()->environment('local') && !file_exists(public_path('vendor/laravelops')))
+        @vite(['resources/js/app.jsx', 'resources/js/index.css'])
+    @else
+        <link rel="stylesheet" href="{{ asset('vendor/laravelops/assets/index.css') }}">
+        <script type="module" src="{{ asset('vendor/laravelops/assets/app.js') }}"></script>
+    @endif
 </head>
 <body class="font-sans antialiased">
     <div id="app"></div>
@@ -22,6 +27,5 @@
         // Set up CSRF token for Axios
         window.csrfToken = "{{ csrf_token() }}";
     </script>
-    <script src="{{ asset('vendor/laravelops/js/app.js') }}" defer></script>
 </body>
 </html> 

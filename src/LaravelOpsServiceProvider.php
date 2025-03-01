@@ -17,10 +17,26 @@ class LaravelOpsServiceProvider extends ServiceProvider
         $router->aliasMiddleware('laravelops.access', \Hamzasgd\LaravelOps\Http\Middleware\AccessMiddleware::class);
 
         if ($this->app->runningInConsole()) {
+            // Publish configuration
+            $this->publishes([
+                __DIR__.'/../config/laravelops.php' => config_path('laravelops.php'),
+            ], 'laravelops-config');
+
+            // Publish views
+            $this->publishes([
+                __DIR__.'/../resources/views' => resource_path('views/vendor/laravelops'),
+            ], 'laravelops-views');
+
+            // Publish assets
+            $this->publishes([
+                __DIR__.'/../public/build' => public_path('vendor/laravelops'),
+            ], 'laravelops-assets');
+
+            // Publish all resources
             $this->publishes([
                 __DIR__.'/../config/laravelops.php' => config_path('laravelops.php'),
                 __DIR__.'/../resources/views' => resource_path('views/vendor/laravelops'),
-                __DIR__.'/../public' => public_path('vendor/laravelops'),
+                __DIR__.'/../public/build' => public_path('vendor/laravelops'),
             ], 'laravelops');
         }
     }

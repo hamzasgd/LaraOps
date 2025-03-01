@@ -19,7 +19,5 @@ Route::get('/', function () {
 });
 
 // LaraOps routes - serve the SPA for all routes
-Route::get('/laravelops/{any?}', [LaraOpsController::class, 'index'])
-    ->where('any', '.*')
-    ->middleware(['web'])
-    ->name('laraops.index'); 
+Route::get('/laravelops', [LaraOpsController::class, 'index'])->name('laravelops.index');
+Route::get('/laravelops/{any}', [LaraOpsController::class, 'index'])->where('any', '.*'); 
