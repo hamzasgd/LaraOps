@@ -18,6 +18,14 @@ class SystemInfoController extends Controller
         // Count critical issues
         $criticalIssues = collect($healthChecks)->where('status', 'critical')->count();
         
+        // Get initial system resources
+        $systemResources = [
+            'memory' => $this->getMemoryUsage(),
+            'cpu' => $this->getCpuUsage(),
+            'disk' => $this->getDiskUsage(),
+            'load' => $this->getSystemLoad()
+        ];
+        
         return view('laravelops::system.index', [
             'systemInfo' => $this->getSystemInfo(),
             'laravelInfo' => $this->getLaravelInfo(),
@@ -25,7 +33,9 @@ class SystemInfoController extends Controller
             'storageInfo' => $this->getStorageInfo(),
             'webServerInfo' => $this->getWebServerInfo(),
             'healthChecks' => $healthChecks,
-            'criticalIssues' => $criticalIssues
+            'criticalIssues' => $criticalIssues,
+            'systemResources' => $systemResources,
+            'phpExtensions' => get_loaded_extensions()
         ]);
     }
     
@@ -489,6 +499,8 @@ class SystemInfoController extends Controller
                 'success' => true,
                 'memory' => $this->getMemoryUsage(),
                 'cpu' => $this->getCpuUsage(),
+                'disk' => $this->getDiskUsage(),
+                'load' => $this->getSystemLoad(),
                 'time' => now()->format('H:i:s')
             ];
             
@@ -595,5 +607,37 @@ class SystemInfoController extends Controller
             'percentage' => null,
             'formatted' => 'CPU usage information not available'
         ];
+    }
+
+    private function getDiskUsage()
+    {
+        try {
+            $total = disk_total_space(storage_path());
+            $free = disk_free_space(storage_path());
+            $used = $total - $free;
+            $percentage = round(($used / $total) * 100, 1);
+            
+            return [
+                'total' => $total,
+                'used' => $used,
+                'free' => $free,
+                'percentage' => $percentage,
+                'formatted' => $this->formatBytes($used) . ' / ' . $this->formatBytes($total)
+            ];
+        } catch (\Exception $e) {
+            return [
+                'percentage' => null,
+                'formatted' => 'Disk information not available'
+            ];
+        }
+    }
+
+    private function getSystemLoad()
+    {
+        if (function_exists('sys_getloadavg')) {
+            return sys_getloadavg();
+        }
+        
+        return [0, 0, 0];
     }
 } 
