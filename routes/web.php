@@ -1,40 +1,25 @@
 <?php
 
-use Hamzasgd\LaravelOps\Http\Controllers\LogViewerController;
-use Hamzasgd\LaravelOps\Http\Controllers\ArtisanController;
-use Hamzasgd\LaravelOps\Http\Controllers\EnvController;
-use Hamzasgd\LaravelOps\Http\Controllers\TinkerController;
-use Hamzasgd\LaravelOps\Http\Controllers\SystemInfoController;
 use Illuminate\Support\Facades\Route;
+use Hamzasgd\LaravelOps\Http\Controllers\LaraOpsController;
 
-Route::group([
-    'prefix' => config('laravelops.route_prefix', 'laravelops'),
-    'middleware' => config('laravelops.middleware', ['web', 'auth']),
-    'as' => 'laravelops.',
-], function () {
-    // Default route - redirect to dashboard
-    Route::get('/', function () {
-        return redirect()->route('laravelops.system.index');
-    })->name('index');
-    
-    Route::get('/logs', [LogViewerController::class, 'index'])->name('logs.index');
-    Route::get('/logs/{filename}', [LogViewerController::class, 'show'])->name('logs.show');
-    
-    Route::get('/artisan', [ArtisanController::class, 'index'])->name('artisan.index');
-    Route::post('/artisan/execute', [ArtisanController::class, 'execute'])->name('artisan.execute');
-    
-    Route::get('/env', [EnvController::class, 'index'])->name('env.index');
-    Route::post('/env/clear-cache', [EnvController::class, 'clearCache'])->name('env.clear-cache');
-    
-    Route::get('/tinker', [TinkerController::class, 'index'])->name('tinker.index');
-    Route::post('/tinker/execute', [TinkerController::class, 'execute'])->name('tinker.execute');
-    Route::get('/tinker/history', [TinkerController::class, 'getHistory'])->name('tinker.history');
-    Route::post('/tinker/history', [TinkerController::class, 'saveHistory'])->name('tinker.save-history');
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "web" middleware group. Make something great!
+|
+*/
 
-    Route::get('/system', [SystemInfoController::class, 'index'])->name('system.index');
-    Route::post('/system/clear-cache', [SystemInfoController::class, 'clearCache'])->name('system.clear-cache');
-    Route::post('/system/clear-views', [SystemInfoController::class, 'clearViews'])->name('system.clear-views');
-    Route::post('/system/clear-routes', [SystemInfoController::class, 'clearRoutes'])->name('system.clear-routes');
-    Route::post('/system/create-link', [SystemInfoController::class, 'createStorageLink'])->name('system.create-link');
-    Route::get('/system/resources', [SystemInfoController::class, 'getSystemResources'])->name('system.resources');
-}); 
+Route::get('/', function () {
+    return view('welcome');
+});
+
+// LaraOps routes - serve the SPA for all routes
+Route::get('/laravelops/{any?}', [LaraOpsController::class, 'index'])
+    ->where('any', '.*')
+    ->middleware(['web'])
+    ->name('laraops.index'); 
