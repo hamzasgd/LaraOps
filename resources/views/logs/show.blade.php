@@ -323,6 +323,43 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Search functionality
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase().trim();
+            
+            // If search term is empty, show all entries
+            if (searchTerm === '') {
+                document.querySelectorAll('#logEntries tr').forEach(row => {
+                    row.style.display = '';
+                });
+                return;
+            }
+            
+            // Process each log entry pair (main row + detail row)
+            const logEntries = document.querySelectorAll('#logEntries tr.log-entry');
+            
+            logEntries.forEach(entry => {
+                // Get the detail row
+                const detailRow = document.getElementById(entry.getAttribute('data-bs-target').substring(1));
+                
+                // Get all text content from both rows
+                const entryText = entry.textContent.toLowerCase();
+                const detailText = detailRow ? detailRow.textContent.toLowerCase() : '';
+                
+                // Check if either row contains the search term
+                const isVisible = entryText.includes(searchTerm) || detailText.includes(searchTerm);
+                
+                // Show/hide both rows based on search result
+                entry.style.display = isVisible ? '' : 'none';
+                if (detailRow) {
+                    detailRow.style.display = isVisible ? '' : 'none';
+                }
+            });
+        });
+    }
+    
     // Toggle log details
     const logEntries = document.querySelectorAll('.log-entry');
     logEntries.forEach(entry => {
@@ -331,29 +368,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const targetElement = document.querySelector(targetId);
             if (targetElement) {
                 targetElement.classList.toggle('hidden');
+                // Ensure the detail row is displayed if the entry is expanded
+                targetElement.style.display = targetElement.classList.contains('hidden') ? 'none' : '';
             }
         });
     });
-    
-    // Search functionality
-    const searchInput = document.getElementById('searchInput');
-    if (searchInput) {
-        searchInput.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-            const logEntries = document.querySelectorAll('#logEntries tr.log-entry');
-            
-            logEntries.forEach(entry => {
-                const nextRow = entry.nextElementSibling;
-                const text = entry.textContent.toLowerCase();
-                const isVisible = text.includes(searchTerm);
-                
-                entry.style.display = isVisible ? '' : 'none';
-                if (nextRow && nextRow.id) {
-                    nextRow.style.display = 'none'; // Always hide detail rows when searching
-                }
-            });
-        });
-    }
     
     // View toggle functionality
     const viewToggleButtons = document.querySelectorAll('.view-toggle');
