@@ -19,6 +19,7 @@ Route::group([
     
     Route::get('/logs', [LogViewerController::class, 'index'])->name('logs.index');
     Route::get('/logs/{filename}', [LogViewerController::class, 'show'])->name('logs.show');
+    Route::get('/logs/live', [LogViewerController::class, 'viewLive'])->name('logs.live');
     
     Route::get('/artisan', [ArtisanController::class, 'index'])->name('artisan.index');
     Route::post('/artisan/execute', [ArtisanController::class, 'execute'])->name('artisan.execute');
