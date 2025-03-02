@@ -51,11 +51,17 @@ class LogService
         return $this->logPath . DIRECTORY_SEPARATOR . $filename;
     }
 
-    public function getLogContent($filename)
+    public function getLogContent($filename, $level = null, $perPage = 10, $page = 1)
     {
         $path = $this->getLogPath($filename);
         if (!file_exists($path)) {
-            return [];
+            return [
+                'logs' => [],
+                'total' => 0,
+                'currentPage' => $page,
+                'lastPage' => 1,
+                'perPage' => $perPage,
+            ];
         }
 
         $content = file_get_contents($path);
@@ -64,6 +70,7 @@ class LogService
 
         $logs = [];
         foreach ($matches as $match) {
+            // Extract log details
             $datetime = $match[1];
             $environment = $match[2];
             $level = $match[3];
@@ -111,7 +118,18 @@ class LogService
             ];
         }
 
-        return $logs;
+        // Pagination logic
+        $totalLogs = count($logs);
+        $offset = ($page - 1) * $perPage;
+        $logs = array_slice($logs, $offset, $perPage);
+
+        return [
+            'logs' => $logs,
+            'total' => $totalLogs,
+            'currentPage' => $page,
+            'lastPage' => ceil($totalLogs / $perPage),
+            'perPage' => $perPage,
+        ];
     }
 
     /**

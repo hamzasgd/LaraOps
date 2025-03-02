@@ -21,21 +21,18 @@ class LogViewerController extends Controller
         return view('laravelops::logs.index', compact('files'));
     }
 
-    public function show(string $filename)
+    public function show(string $filename, Request $request)
     {
-        $logs = $this->logService->getLogContent($filename);
-        
-        // Format the log messages to ensure proper display
-        foreach ($logs as &$log) {
-            $log['message'] = trim($log['message']);
-        }
-        
-        // Add a helper function for the view to format stack traces
-        $formatStackTrace = function($stackTrace) {
-            return $this->formatStackTrace($stackTrace);
-        };
-        
-        return view('laravelops::logs.show', compact('logs', 'filename', 'formatStackTrace'));
+        $perPage = $request->query('perPage', 10); // Number of logs per page
+        $page = $request->query('page', 1); // Current page
+
+        $logData = $this->logService->getLogContent($filename, null, $perPage, $page);
+        $logs = $logData['logs'];
+        $totalLogs = $logData['total'];
+        $currentPage = $logData['currentPage'];
+        $lastPage = $logData['lastPage'];
+
+        return view('laravelops::logs.show', compact('logs', 'filename', 'totalLogs', 'currentPage', 'lastPage', 'perPage'));
     }
 
     public function live(Request $request)

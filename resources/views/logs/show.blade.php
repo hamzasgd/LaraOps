@@ -297,6 +297,28 @@
             </tbody>
         </table>
     </div>
+
+    <div class="mt-4">
+        <nav aria-label="Page navigation">
+            <ul class="flex justify-center">
+                @if($currentPage > 1)
+                    <li>
+                        <a href="{{ route('laravelops.logs.show', ['filename' => $filename, 'page' => $currentPage - 1, 'perPage' => $perPage]) }}" class="px-4 py-2 border border-gray-300 rounded-lg">Previous</a>
+                    </li>
+                @endif
+                @for($i = 1; $i <= $lastPage; $i++)
+                    <li>
+                        <a href="{{ route('laravelops.logs.show', ['filename' => $filename, 'page' => $i, 'perPage' => $perPage]) }}" class="px-4 py-2 border border-gray-300 rounded-lg {{ $currentPage == $i ? 'bg-indigo-600 text-white' : '' }}">{{ $i }}</a>
+                    </li>
+                @endfor
+                @if($currentPage < $lastPage)
+                    <li>
+                        <a href="{{ route('laravelops.logs.show', ['filename' => $filename, 'page' => $currentPage + 1, 'perPage' => $perPage]) }}" class="px-4 py-2 border border-gray-300 rounded-lg">Next</a>
+                    </li>
+                @endif
+            </ul>
+        </nav>
+    </div>
 </div>
 
 <script>
