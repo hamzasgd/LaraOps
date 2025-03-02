@@ -24,7 +24,18 @@ class LogViewerController extends Controller
     public function show(string $filename)
     {
         $logs = $this->logService->getLogContent($filename);
-        return view('laravelops::logs.show', compact('logs', 'filename'));
+        
+        // Format the log messages to ensure proper display
+        foreach ($logs as &$log) {
+            $log['message'] = trim($log['message']);
+        }
+        
+        // Add a helper function for the view to format stack traces
+        $formatStackTrace = function($stackTrace) {
+            return $this->formatStackTrace($stackTrace);
+        };
+        
+        return view('laravelops::logs.show', compact('logs', 'filename', 'formatStackTrace'));
     }
 
     public function live(Request $request)

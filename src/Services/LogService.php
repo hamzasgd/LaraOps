@@ -96,6 +96,11 @@ class LogService
                 $message = $fullMessage;
             }
             
+            // Ensure message is properly trimmed and normalized
+            $message = preg_replace('/\s+/', ' ', trim($message));
+            // Force the message to be a single line with no extra whitespace
+            $message = str_replace(["\r", "\n", "\t"], '', $message);
+            
             $logs[] = [
                 'datetime' => $datetime,
                 'environment' => $environment,
